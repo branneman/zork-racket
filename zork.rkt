@@ -1,7 +1,7 @@
 #lang racket
 
 (display "ZORK-RACKET I\n")
-(display "SPDX identifier: Unlicense\n")
+(display "Unlicense\n")
 (display "ZORK is a registered trademark of Infocom, Inc.\n")
 
 ; Read-Eval-Print-Loop
@@ -19,7 +19,7 @@
 (define (exit-handler)
   (define score "Your score is 0 (total of 350 points), in 0 moves.")
   (define rank "This gives you the rank of Beginner.")
-  (display (string-append score "\n" rank))
+  (display (string-append score "\n" rank "\n"))
   (exit))
 
 (define (get-initial-state)
