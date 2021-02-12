@@ -17,6 +17,5 @@
 
 ## Small tasks
 
-- Load strings from external file
 - Gather actual zork questions + replies, use those strings
 - Capture Ctrl-C, no-op
