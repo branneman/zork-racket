@@ -2,15 +2,32 @@
 
 (require graph)
 
+; player state
+(provide movements
+         add-movement
+         get-location
+         has-visited
+         set-visited)
+
+; game data
 (provide leveldata
          leveldata-label
-         leveldata-description
-         leveldata-visited?)
+         leveldata-label-set!
+         leveldata-description)
+
+(define movements '(west-of-house)) ; reversed
+(define (add-movement location)
+  (set! movements (cons location movements)))
+(define (get-location) (first movements))
 
 (define leveldata (unweighted-graph/undirected '()))
+
 (define-vertex-property leveldata leveldata-label)
 (define-vertex-property leveldata leveldata-description)
-(define-vertex-property leveldata leveldata-visited? #:init #f)
+
+(define-vertex-property leveldata leveldata-visited #:init #f)
+(define (has-visited location) (leveldata-visited location #:default #f))
+(define (set-visited location) (leveldata-visited-set! location #t))
 
 ;(get-vertices leveldata)
 ;(get-neighbors leveldata 'west-of-house)
@@ -23,8 +40,8 @@
 (add-edge! leveldata 'west-of-house 'stone-barrow)
 (add-edge! leveldata 'west-of-house 'forest-1)
 
-;(leveldata-visited?-set! 'kitchen #t)
-;(leveldata-visited? 'kitchen)
+;(has-visited 'kitchen)
+;(set-visited 'kitchen)
 
 ;(leveldata-label 'west-of-house)
 ;(leveldata-description 'west-of-house)
