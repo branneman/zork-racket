@@ -25,12 +25,13 @@
   ; parse input for exact match
   ; define arbitrary behaviour per match
   ; no match? print 'input-unknown-sentence
-  (when (or (equal? input "quit") (equal? input "exit"))
-    (repl/exit-handler))
+  (when (or (equal? input "quit") (equal? input "exit") (equal? input eof))
+    (repl/exit-handler input))
   (display (string-append (string-replace (get-string 'input-unknown-word) "%%" input) "\n")))
 
-(define (repl/exit-handler)
+(define (repl/exit-handler input)
   (define score (get-string 'score))
   (define rank (get-string 'rank))
+  (when (equal? input eof) (display "\n"))
   (display (string-append score "\n" rank "\n"))
   (exit))
