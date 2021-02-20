@@ -2,10 +2,13 @@
 
 (require "strings.rkt")
 (require "leveldata.rkt")
+(require "parser.rkt")
+;(require "state-machine.rkt")
 
 (provide repl/loop
          repl/handler
-         repl/exit-handler)
+         repl/execute
+         repl/exit)
 
 (define (repl/loop)
   ; print location name + description if this is the first visit
@@ -22,16 +25,20 @@
   (repl/loop))
 
 (define (repl/handler input)
-  ; parse input for exact match
-  ; define arbitrary behaviour per match
-  ; no match? print 'input-unknown-sentence
-  (when (or (equal? input "quit") (equal? input "exit") (equal? input eof))
-    (repl/exit-handler input))
-  (display (string-append (string-replace (get-string 'input-unknown-word) "%%" input) "\n")))
+  (let* ([command (parser/parse input)]
+         [reply (repl/execute command)])
+    (for ([str reply])
+      (display (string-append str "\n")))))
 
-(define (repl/exit-handler input)
-  (define score (get-string 'score))
-  (define rank (get-string 'rank))
-  (when (equal? input eof) (display "\n"))
-  (display (string-append score "\n" rank "\n"))
-  (exit))
+(define (repl/execute command)
+  (case (command-id command)
+    ['quit (repl/exit)]
+    ['error (list (get-string (first (command-variables command))))]
+    [else "yolo"]
+  ))
+
+(define (repl/exit)
+  (let ([score (get-string 'score)]
+        [rank (get-string 'rank)])
+    (display (string-append score "\n" rank "\n"))
+    (exit)))
