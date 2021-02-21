@@ -1,44 +1,11 @@
 #lang racket
 
-(require graph)
+(require "level.rkt")
 
-; player state
-(provide movements
-         add-movement
-         get-location
-         has-visited
-         set-visited)
-
-(define movements '(west-of-house)) ; reversed
-(define (add-movement location)
-  (set! movements (cons location movements)))
-(define (get-location) (first movements))
-
-; game data
 (provide leveldata
          leveldata-label
          leveldata-label-set!
          leveldata-description)
-
-(define leveldata (unweighted-graph/undirected '()))
-
-(define-vertex-property leveldata leveldata-label)
-(define-vertex-property leveldata leveldata-description)
-(define-edge-property leveldata leveldata-edge-direction)
-
-(define-vertex-property leveldata leveldata-visited #:init #f)
-(define (has-visited location) (leveldata-visited location #:default #f))
-(define (set-visited location) (leveldata-visited-set! location #t))
-
-; adds a vertexes, edges and metadata
-(define (graph-part vertex label desc edges)
-  (leveldata-label-set! vertex label)
-  (leveldata-description-set! vertex desc)
-  (for/list ([edge edges])
-    (define-values (dir vertex2) (apply values edge)) ; very verbose destructure?!
-    (add-edge! leveldata vertex vertex2)
-    (leveldata-edge-direction-set! vertex vertex2 dir))
-  (void))
 
 (graph-part 'west-of-house "West of House"
   "You are standing in an open field west of a white house, with a boarded front door."
