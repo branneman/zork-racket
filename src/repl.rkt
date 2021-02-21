@@ -2,6 +2,7 @@
 
 (require "strings.rkt")
 (require "leveldata.rkt")
+(require "state.rkt")
 (require "parser.rkt")
 ;(require "state-machine.rkt")
 
@@ -33,9 +34,7 @@
 (define (repl/execute command)
   (case (command-id command)
     ['quit (repl/exit)]
-    ['error (list (get-string (first (command-variables command))))]
-    [else "yolo"]
-  ))
+    ['error (list (get-string (first (command-variables command))))]))
 
 (define (repl/exit)
   (let ([score (get-string 'score)]
