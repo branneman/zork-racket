@@ -7,7 +7,7 @@
 ; look
 ; look around
 ; inventory
-; shout -> Aaaarrrrgggghhhh!
+; shout/scream -> Aaaarrrrgggghhhh!
 
 ; (direction)
 ; go (direction)
@@ -20,6 +20,7 @@
 ; attack/kill (creature) with (item)
 
 (require "parser.rkt")
+(require "state.rkt")
 
 (define (suite name body)
   (display (string-append "\n" name "\n"))

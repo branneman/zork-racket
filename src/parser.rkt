@@ -1,11 +1,10 @@
 #lang racket
 
+(require "state.rkt")
+
 (provide parser/parse
          parser/clean-input
-         parser/words->command
-         command
-         command-id
-         command-variables)
+         parser/words->command)
 
 ; parser/parse :: string -> command<id,variables>
 (define (parser/parse input)
@@ -20,8 +19,6 @@
             (λ (s) (string-replace s #px"\\s+" " "))
             (λ (s) (string-replace s #px"[^a-zA-Z\\s]" ""))))
 
-(struct command (id variables) #:transparent)
-
 ; parser/words->command :: (string ...) -> command<id,variables>
 (define (parser/words->command words)
   (define sentence-length (length words))
@@ -31,6 +28,10 @@
       unknown-sentence]
     [(= sentence-length 1)
       (cond
+        [(equal? (first words) "score")
+          (command 'score '())]
+        [(equal? (first words) "rank")
+          (command 'rank '())]
         [(or (equal? (first words) "quit")
              (equal? (first words) "exit"))
           (command 'quit '())]
