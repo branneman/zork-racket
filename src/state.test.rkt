@@ -1,32 +1,44 @@
 #lang racket
 
-(require "state.rkt")
+(require rackunit
+         "state.rkt")
+(provide state-tests)
 
-(define (suite name body)
-  (display (string-append "\n" name "\n"))
-  (body)
-  (display "    ALL PASSED\n"))
-(define (assert desc expect actual)
-  (if (equal? expect actual)
-    (begin
-      (display (string-append "    PASS: " desc "\n")))
-    (begin
-      (display (string-append "\n    FAIL: " desc "\n"))
-      (display (string-append "  EXPECT: "))
-      (print expect)
-      (display (string-append "\n  ACTUAL: "))
-      (print actual)
-      (display "\n")
-      (exit 1))))
+(define state-tests
+  (test-suite "state"
 
-(suite "state/get-rank" (λ ()
-  (assert "0" "Beginner" (state/get-rank 0))
-  (assert "24" "Beginner" (state/get-rank 24))
-  (assert "25" "Amateur Adventurer" (state/get-rank 25))
-  (assert "50" "Novice Adventurer" (state/get-rank 50))
-  (assert "100" "Junior Adventurer" (state/get-rank 100))
-  (assert "200" "Adventurer" (state/get-rank 200))
-  (assert "300" "Master" (state/get-rank 300))
-  (assert "330" "Wizard" (state/get-rank 330))
-  (assert "350" "Master Adventurer" (state/get-rank 350))
-))
+    (test-suite "state/get-rank"
+      (test-case "0-24: Beginner"
+        (check-equal? (state/get-rank 0) "Beginner")
+        (check-equal? (state/get-rank 24) "Beginner"))
+      (test-case "25-49: Amateur Adventurer"
+        (check-equal? (state/get-rank 25) "Amateur Adventurer")
+        (check-equal? (state/get-rank 49) "Amateur Adventurer"))
+      (test-case "50-99: Novice Adventurer"
+        (check-equal? (state/get-rank 50) "Novice Adventurer")
+        (check-equal? (state/get-rank 99) "Novice Adventurer"))
+      (test-case "100-199: Junior Adventurer"
+        (check-equal? (state/get-rank 100) "Junior Adventurer")
+        (check-equal? (state/get-rank 199) "Junior Adventurer"))
+      (test-case "200-299: Adventurer"
+        (check-equal? (state/get-rank 200) "Adventurer")
+        (check-equal? (state/get-rank 299) "Adventurer"))
+      (test-case "300-329: Master"
+        (check-equal? (state/get-rank 300) "Master")
+        (check-equal? (state/get-rank 329) "Master"))
+      (test-case "330-349: Wizard"
+        (check-equal? (state/get-rank 330) "Wizard")
+        (check-equal? (state/get-rank 349) "Wizard"))
+      (test-case "350: Master Adventurer"
+        (check-equal? (state/get-rank 350) "Master Adventurer"))
+      (test-case "350-∞: Cheater"
+        (check-equal? (state/get-rank 351) "Cheater")
+        (check-equal? (state/get-rank 1000) "Cheater"))
+
+      (test-case "only accepts natural numbers"
+        (void)))
+
+    (test-suite "state/update"
+      (test-case "throws error when given unknown command"
+        (check-exn exn:fail?
+          (λ () (state/update (command 'foobar '()))))))))

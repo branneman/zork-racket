@@ -19,57 +19,57 @@
 
 ; attack/kill (creature) with (item)
 
-(require "parser.rkt")
-(require "state.rkt")
+(require rackunit
+         "parser.rkt"
+         "state.rkt")
+(provide parser-tests)
 
-(define (suite name body)
-  (display (string-append "\n" name "\n"))
-  (body)
-  (display "    ALL PASSED\n"))
-(define (assert desc expect actual)
-  (if (equal? expect actual)
-    (begin
-      (display (string-append "    PASS: " desc "\n")))
-    (begin
-      (display (string-append "\n    FAIL: " desc "\n"))
-      (display (string-append "  EXPECT: "))
-      (print expect)
-      (display (string-append "\n  ACTUAL: "))
-      (print actual)
-      (display "\n")
-      (exit 1))))
+(define parser-tests
+  (test-suite "parser"
 
-(suite "parser/clean-input" (λ ()
-  (assert "accepts empty input"
-    ""
-    (parser/clean-input ""))
-  (assert "leaves correct input alone"
-    "abc"
-    (parser/clean-input "abc"))
-  (assert "trims leading whitespace"
-    "abc"
-    (parser/clean-input "   abc"))
-  (assert "trims trailing whitespace"
-    "abc"
-    (parser/clean-input "abc \n"))
-  (assert "reduces multiple whitespace characters into one"
-    "abc def ghi jkl"
-    (parser/clean-input "abc \t\n  def  ghi jkl"))
-  (assert "lowercases a-z"
-    "abc def ghi"
-    (parser/clean-input "abc DEF ghi"))
-  (assert "replaces non-A-Z characters"
-    "abc ghi mno"
-    (parser/clean-input "abc 123 ghi !@# mno"))))
+    (test-suite "parser/clean-input"
+      (test-case "accepts empty input"
+        (check-equal?
+          (parser/clean-input "")
+          ""))
+      (test-case "leaves correct input alone"
+        (check-equal?
+          (parser/clean-input "abc")
+          "abc")
+        (check-equal?
+          (parser/clean-input "abc def")
+          "abc def"))
+      (test-case "trims leading whitespace"
+        (check-equal?
+          (parser/clean-input "   abc")
+          "abc"))
+      (test-case "trims trailing whitespace"
+        (check-equal?
+          (parser/clean-input "abc \n")
+          "abc"))
+      (test-case "reduces multiple whitespace characters into one"
+        (check-equal?
+          (parser/clean-input "abc \t\n  def  ghi jkl")
+          "abc def ghi jkl"))
+      (test-case "lowercases a-z"
+        (check-equal?
+          (parser/clean-input "abc DEF ghi")
+          "abc def ghi"))
+      (test-case "replaces non-A-Z characters"
+        (check-equal?
+          (parser/clean-input "abc 123 ghi !@# mno")
+          "abc ghi mno")))
 
-(suite "parser/words->command" (λ ()
-  (assert "accepts empty input"
-    (command 'error '(input-empty))
-    (parser/words->command '()))
-  (assert "recognises `quit` command when given: quit"
-    (command 'quit '())
-    (parser/words->command '("quit")))
-  (assert "recognises `quit` command when given: exit"
-    (command 'quit '())
-    (parser/words->command '("exit")))
-))
+    (test-suite "parser/words->command"
+      (test-case "accepts empty input"
+        (check-equal?
+          (parser/words->command '())
+          (command 'error '(input-empty))))
+      (test-case "recognises `quit` command when given: quit"
+        (check-equal?
+          (parser/words->command '("quit"))
+          (command 'quit '())))
+      (test-case "recognises `quit` command when given: exit"
+        (check-equal?
+          (parser/words->command '("exit"))
+          (command 'quit '()))))))
