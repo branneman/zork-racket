@@ -28,6 +28,18 @@
 (define (state/set-location loc)
   (set! state/location loc))
 
+(define state/health-max 5)
+(define state/health state/health-max)
+(define (state/is-dead) (<= state/health 0))
+(define (state/health-decrease)
+  (if (state/is-dead)
+      (void)
+      (set! state/health (- state/health 1))))
+(define (state/health-increase)
+  (if (= state/health state/health-max)
+      (void)
+      (set! state/health (+ state/health 1))))
+
 (define-vertex-property leveldata leveldata-visited #:init #f)
 (define (state/has-visited location) (leveldata-visited location #:default #f))
 (define (state/set-visited location) (leveldata-visited-set! location #t))
@@ -75,18 +87,21 @@
                    (list (leveldata-label new-loc)
                          (leveldata-description new-loc)))))))]
 
+    ['diagnose
+     (list (get-string (string->symbol (string-append "health-" (~s state/health)))))]
+
     ['score
      (list
-      ((compose1 (λ (s) (string-replace s "$1" (format "~a" (state/get-score))))
-                 (λ (s) (string-replace s "$2" (format "~a" state/max-score)))
-                 (λ (s) (string-replace s "$3" (format "~a" (length state/commands)))))
+      ((compose1 (λ (s) (string-replace s "$1" (~s (state/get-score))))
+                 (λ (s) (string-replace s "$2" (~s state/max-score)))
+                 (λ (s) (string-replace s "$3" (~s (length state/commands)))))
        (get-string 'score)))]
 
     ['rank
      (list (string-replace
             (get-string 'rank)
             "$1"
-            (format "~a" (state/get-rank (state/get-score)))))]
+            (format "~s" (state/get-rank (state/get-score)))))]
 
     ['quit
      (begin

@@ -19,10 +19,16 @@
             (λ (s) (string-replace s #px"\\s+" " "))
             (λ (s) (string-replace s #px"[^a-zA-Z\\s]" ""))))
 
+; parser/replace-aliases :: (string ...) -> (string ...)
+(define (parser/replace-aliases words)
+  (map (λ (x) x)
+       words))
+
 ; parser/words->command :: (string ...) -> command<id,variables>
 (define (parser/words->command words)
-  (define sentence-length (length words))
-  (define unknown-sentence (command 'error '(input-unknown-sentence)))
+  (let* ([sentence-length (length words)]
+         [unknown-sentence (command 'error '(input-unknown-sentence))]
+         [words (parser/replace-aliases words)])
   (cond
 
     [(> sentence-length 2)
@@ -36,36 +42,52 @@
             (equal? (first words) "go"))
         (let* ([word (second words)]
                [dir (cond
-                      [(equal? word "up") 'up]
-                      [(equal? word "down") 'down]
-                      [(equal? word "north") 'N]
-                      [(equal? word "northeast") 'NE]
-                      [(equal? word "east") 'E]
-                      [(equal? word "southeast") 'SE]
-                      [(equal? word "south") 'S]
-                      [(equal? word "southwest") 'SW]
-                      [(equal? word "west") 'W]
-                      [(equal? word "northwest") 'NW])])
+                      [(or (equal? word "up")        (equal? word "u"))  'up]
+                      [(or (equal? word "down")      (equal? word "d"))  'down]
+                      [(or (equal? word "north")     (equal? word "n"))  'N]
+                      [(or (equal? word "northeast") (equal? word "ne")) 'NE]
+                      [(or (equal? word "east")      (equal? word "e"))  'E]
+                      [(or (equal? word "southeast") (equal? word "se")) 'SE]
+                      [(or (equal? word "south")     (equal? word "s"))  'S]
+                      [(or (equal? word "southwest") (equal? word "sw")) 'SW]
+                      [(or (equal? word "west")      (equal? word "w"))  'W]
+                      [(or (equal? word "northwest") (equal? word "nw")) 'NW])])
           (if (not (void? dir))
               (command 'move (list dir))
               (unknown-sentence)))]
        [else unknown-sentence])]
 
     [(= sentence-length 1)
-     (cond
-       [(equal? (first words) "look")
-        (command 'look '())]
-       [(equal? (first words) "score")
-        (command 'score '())]
-       [(equal? (first words) "rank")
-        (command 'rank '())]
-       [(or (equal? (first words) "quit")
-            (equal? (first words) "exit"))
-        (command 'quit '())]
-       [else unknown-sentence])]
+     (let ([word (first words)])
+       (cond
+         [(or (equal? word "up")        (equal? word "u"))  (command 'move '(up))]
+         [(or (equal? word "down")      (equal? word "d"))  (command 'move '(down))]
+         [(or (equal? word "north")     (equal? word "n"))  (command 'move '(N))]
+         [(or (equal? word "northeast") (equal? word "ne")) (command 'move '(NE))]
+         [(or (equal? word "east")      (equal? word "e"))  (command 'move '(E))]
+         [(or (equal? word "southeast") (equal? word "se")) (command 'move '(SE))]
+         [(or (equal? word "south")     (equal? word "s"))  (command 'move '(S))]
+         [(or (equal? word "southwest") (equal? word "sw")) (command 'move '(SW))]
+         [(or (equal? word "west")      (equal? word "w"))  (command 'move '(W))]
+         [(or (equal? word "northwest") (equal? word "nw")) (command 'move '(NW))]
+
+         [(or (equal? word "diagnose")
+              (equal? word "diagnostic"))
+          (command 'diagnose '())]
+         [(or (equal? word "l")
+              (equal? word "look"))
+          (command 'look '())]
+         [(equal? word "score")
+          (command 'score '())]
+         [(equal? word "rank")
+          (command 'rank '())]
+         [(or (equal? word "quit")
+              (equal? word "exit"))
+          (command 'quit '())]
+         [else unknown-sentence]))]
 
     [(= sentence-length 0)
      (command 'error '(input-empty))]
 
     [else
-     unknown-sentence]))
+     unknown-sentence])))
