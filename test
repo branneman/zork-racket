@@ -8,3 +8,6 @@
 
 (require "src/state.test.rkt")
 (void (run-tests state-tests))
+
+(require "src/level.test.rkt")
+(void (run-tests level-tests))

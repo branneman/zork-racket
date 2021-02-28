@@ -1,8 +1,8 @@
 #lang racket
 
-(require graph)
-(require "leveldata.rkt")
-(require "strings.rkt")
+(require graph
+         "leveldata.rkt"
+         "strings.rkt")
 
 (provide command
          command-id
@@ -11,6 +11,7 @@
          state/commands
          state/add-command
          state/get-location
+         state/set-location
          state/has-visited
          state/set-visited
          state/get-score
@@ -22,9 +23,10 @@
 (define (state/add-command cmd)
   (set! state/commands (cons cmd state/commands)))
 
-; iterate over state/commands to retrieve current location
-(define (state/get-location)
-  'west-of-house)
+(define state/location null)
+(define (state/get-location) state/location)
+(define (state/set-location loc)
+  (set! state/location loc))
 
 (define-vertex-property leveldata leveldata-visited #:init #f)
 (define (state/has-visited location) (leveldata-visited location #:default #f))
@@ -48,28 +50,52 @@
 
 ; state/update :: command<id,variables> -> (string ...)
 (define (state/update cmd)
+  (state/add-command cmd)
   (case (command-id cmd)
+    ['look
+     (let ([loc (state/get-location)])
+       (state/set-visited loc)
+       (list (leveldata-label loc)
+             (leveldata-description loc)))]
+
+    ['move
+     (let* ([dir (first (command-variables cmd))]
+            [edges (level/get-edges (state/get-location))]
+            [edge (findf (λ (edge) (equal? dir (first edge)))
+                         edges)]
+            [new-loc (if (false? edge) #f (second edge))])
+       (if (false? new-loc)
+           (list (get-string 'input-direction-wrong))
+           (begin
+             (state/set-location new-loc)
+             (if (state/has-visited (state/get-location))
+                 (list (leveldata-label new-loc))
+                 (begin
+                   (state/set-visited new-loc)
+                   (list (leveldata-label new-loc)
+                         (leveldata-description new-loc)))))))]
+
     ['score
-      (list
-        ((compose1 (λ (s) (string-replace s "$1" (format "~a" (state/get-score))))
-                   (λ (s) (string-replace s "$2" (format "~a" state/max-score)))
-                   (λ (s) (string-replace s "$3" (format "~a" (length state/commands)))))
-          (get-string 'score)))]
+     (list
+      ((compose1 (λ (s) (string-replace s "$1" (format "~a" (state/get-score))))
+                 (λ (s) (string-replace s "$2" (format "~a" state/max-score)))
+                 (λ (s) (string-replace s "$3" (format "~a" (length state/commands)))))
+       (get-string 'score)))]
 
     ['rank
-      (list (string-replace
-        (get-string 'rank)
-        "$1"
-        (format "~a" (state/get-rank (state/get-score)))))]
+     (list (string-replace
+            (get-string 'rank)
+            "$1"
+            (format "~a" (state/get-rank (state/get-score)))))]
 
     ['quit
-      (begin
-        (display (string-append (first (state/update (command 'score '()))) "\n"))
-        (display (string-append (first (state/update (command 'rank '()))) "\n"))
-        (exit))]
+     (begin
+       (display (string-append (first (state/update (command 'score '()))) "\n"))
+       (display (string-append (first (state/update (command 'rank '()))) "\n"))
+       (exit))]
 
     ['error
-      (list (get-string (first (command-variables cmd))))]
+     (list (get-string (first (command-variables cmd))))]
     
     [else
-      (error "state/update: unknown command")]))
+     (error "state/update: unknown command")]))

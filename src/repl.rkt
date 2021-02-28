@@ -1,29 +1,21 @@
 #lang racket
 
-(require "strings.rkt")
-(require "leveldata.rkt")
-(require "state.rkt")
-(require "parser.rkt")
+(require "state.rkt"
+         "parser.rkt")
 
 (provide repl/loop
          repl/handler)
 
 (define (repl/loop)
-  ; print location name + description if this is the first visit
-  (when (not (state/has-visited (state/get-location)))
-    (display (string-append "\n" (leveldata-label (state/get-location)) "\n"))
-    (display (string-append (leveldata-description (state/get-location)) "\n"))
-    (state/set-visited (state/get-location)))
-
-  ; request & capture user input
+  ; request, capture and handle user input
   (display "\n>")
-  (define input (read-line))
+  (repl/handler (read-line))
 
-  (repl/handler input)
+  ; recur
   (repl/loop))
 
 (define (repl/handler input)
-  (let* ([command (parser/parse input)]
-         [reply (state/update command)])
-    (for ([str reply])
-      (display (string-append str "\n")))))
+  (let* ([cmd (parser/parse input)]
+         [xs (state/update cmd)])
+    (for ([s xs])
+      (display (string-append s "\n")))))

@@ -1,10 +1,16 @@
 #!/usr/bin/env racket
 #lang racket
 
-(require graph)
-(require "src/repl.rkt")
-(require "src/strings.rkt")
+(require "src/state.rkt"
+         "src/repl.rkt"
+         "src/strings.rkt")
 
+; welcome message
 (display (get-string 'intro))
 
+; initial state
+(state/set-location 'west-of-house)
+(repl/handler "look")
+
+; start repl
 (repl/loop)

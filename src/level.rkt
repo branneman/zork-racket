@@ -6,6 +6,9 @@
          leveldata-label
          leveldata-label-set!
          leveldata-description
+         leveldata-edge-direction
+         leveldata-edge-direction-set!
+         level/get-edges
          graph-part)
 
 (define leveldata (unweighted-graph/undirected '()))
@@ -13,6 +16,10 @@
 (define-vertex-property leveldata leveldata-label)
 (define-vertex-property leveldata leveldata-description)
 (define-edge-property leveldata leveldata-edge-direction)
+
+(define (level/get-edges vertex)
+  (map (λ (v) (list (leveldata-edge-direction vertex v) v))
+       (get-neighbors leveldata vertex)))
 
 ; adds a vertex, edges and metadata
 (define (graph-part vertex label desc edges)
