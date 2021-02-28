@@ -63,6 +63,40 @@
        "abc ghi mno")))
 
    (test-suite
+    "parser/replace-aliases"
+    (test-case "replaces go/walk with move"
+      (check-equal? (parser/replace-aliases '("go"))   '("move"))
+      (check-equal? (parser/replace-aliases '("walk")) '("move")))
+
+    (test-case "replaces directions"
+      (check-equal? (parser/replace-aliases '("u"))       '("up"))
+      (check-equal? (parser/replace-aliases '("d"))       '("down"))
+      (check-equal? (parser/replace-aliases '("n"))       '("north"))
+      (check-equal? (parser/replace-aliases '("ne"))      '("northeast"))
+      (check-equal? (parser/replace-aliases '("e"))       '("east"))
+      (check-equal? (parser/replace-aliases '("se"))      '("southeast"))
+      (check-equal? (parser/replace-aliases '("s"))       '("south"))
+      (check-equal? (parser/replace-aliases '("sw"))      '("southwest"))
+      (check-equal? (parser/replace-aliases '("w"))       '("west"))
+      (check-equal? (parser/replace-aliases '("nw"))      '("northwest"))
+      (check-equal? (parser/replace-aliases '("go" "u"))  '("move" "up"))
+      (check-equal? (parser/replace-aliases '("go" "d"))  '("move" "down"))
+      (check-equal? (parser/replace-aliases '("go" "n"))  '("move" "north"))
+      (check-equal? (parser/replace-aliases '("go" "ne")) '("move" "northeast"))
+      (check-equal? (parser/replace-aliases '("go" "e"))  '("move" "east"))
+      (check-equal? (parser/replace-aliases '("go" "se")) '("move" "southeast"))
+      (check-equal? (parser/replace-aliases '("go" "s"))  '("move" "south"))
+      (check-equal? (parser/replace-aliases '("go" "sw")) '("move" "southwest"))
+      (check-equal? (parser/replace-aliases '("go" "w"))  '("move" "west"))
+      (check-equal? (parser/replace-aliases '("go" "nw")) '("move" "northwest")))
+
+    (test-case "replaces l with look"
+      (check-equal? (parser/replace-aliases '("l")) '("look")))
+
+    (test-case "replaces diagnostic with diagnose"
+      (check-equal? (parser/replace-aliases '("diagnostic")) '("diagnose"))))
+
+   (test-suite
     "parser/words->command"
     (test-case "accepts empty input"
       (check-equal?

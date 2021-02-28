@@ -4,6 +4,7 @@
 
 (provide parser/parse
          parser/clean-input
+         parser/replace-aliases
          parser/words->command)
 
 ; parser/parse :: string -> command<id,variables>
@@ -21,7 +22,27 @@
 
 ; parser/replace-aliases :: (string ...) -> (string ...)
 (define (parser/replace-aliases words)
-  (map (λ (x) x)
+  (map (λ (x)
+         (case x
+           [("climb" "u")  "up"]
+           [("d")  "down"]
+           [("n")  "north"]
+           [("ne") "northeast"]
+           [("e")  "east"]
+           [("se") "southeast"]
+           [("s")  "south"]
+           [("sw") "southwest"]
+           [("w")  "west"]
+           [("nw") "northwest"]
+
+           [("l") "look"]
+
+           [("go" "head" "walk") "move"]
+
+           [("diagnostic") "diagnose"]
+
+           [("exit" "q") "quit"]
+           [else x]))
        words))
 
 ; parser/words->command :: (string ...) -> command<id,variables>
@@ -38,52 +59,42 @@
      (cond
        [(equal? words '("look" "around"))
         (command 'look '())]
-       [(or (equal? (first words) "move")
-            (equal? (first words) "go"))
-        (let* ([word (second words)]
-               [dir (cond
-                      [(or (equal? word "up")        (equal? word "u"))  'up]
-                      [(or (equal? word "down")      (equal? word "d"))  'down]
-                      [(or (equal? word "north")     (equal? word "n"))  'N]
-                      [(or (equal? word "northeast") (equal? word "ne")) 'NE]
-                      [(or (equal? word "east")      (equal? word "e"))  'E]
-                      [(or (equal? word "southeast") (equal? word "se")) 'SE]
-                      [(or (equal? word "south")     (equal? word "s"))  'S]
-                      [(or (equal? word "southwest") (equal? word "sw")) 'SW]
-                      [(or (equal? word "west")      (equal? word "w"))  'W]
-                      [(or (equal? word "northwest") (equal? word "nw")) 'NW])])
+       [(equal? (first words) "move")
+        (let ([dir (case (second words)
+                     [("up")        'up]
+                     [("down")      'down]
+                     [("north")     'N]
+                     [("northeast") 'NE]
+                     [("east")      'E]
+                     [("southeast") 'SE]
+                     [("south")     'S]
+                     [("southwest") 'SW]
+                     [("west")      'W]
+                     [("northwest") 'NW])])
           (if (not (void? dir))
               (command 'move (list dir))
-              (unknown-sentence)))]
+              unknown-sentence))]
        [else unknown-sentence])]
 
     [(= sentence-length 1)
      (let ([word (first words)])
-       (cond
-         [(or (equal? word "up")        (equal? word "u"))  (command 'move '(up))]
-         [(or (equal? word "down")      (equal? word "d"))  (command 'move '(down))]
-         [(or (equal? word "north")     (equal? word "n"))  (command 'move '(N))]
-         [(or (equal? word "northeast") (equal? word "ne")) (command 'move '(NE))]
-         [(or (equal? word "east")      (equal? word "e"))  (command 'move '(E))]
-         [(or (equal? word "southeast") (equal? word "se")) (command 'move '(SE))]
-         [(or (equal? word "south")     (equal? word "s"))  (command 'move '(S))]
-         [(or (equal? word "southwest") (equal? word "sw")) (command 'move '(SW))]
-         [(or (equal? word "west")      (equal? word "w"))  (command 'move '(W))]
-         [(or (equal? word "northwest") (equal? word "nw")) (command 'move '(NW))]
+       (case word
+         [("up")        (command 'move '(up))]
+         [("down")      (command 'move '(down))]
+         [("north")     (command 'move '(N))]
+         [("northeast") (command 'move '(NE))]
+         [("east")      (command 'move '(E))]
+         [("southeast") (command 'move '(SE))]
+         [("south")     (command 'move '(S))]
+         [("southwest") (command 'move '(SW))]
+         [("west")      (command 'move '(W))]
+         [("northwest") (command 'move '(NW))]
 
-         [(or (equal? word "diagnose")
-              (equal? word "diagnostic"))
-          (command 'diagnose '())]
-         [(or (equal? word "l")
-              (equal? word "look"))
-          (command 'look '())]
-         [(equal? word "score")
-          (command 'score '())]
-         [(equal? word "rank")
-          (command 'rank '())]
-         [(or (equal? word "quit")
-              (equal? word "exit"))
-          (command 'quit '())]
+         [("diagnose")  (command 'diagnose '())]
+         [("look")      (command 'look '())]
+         [("score")     (command 'score '())]
+         [("rank")      (command 'rank '())]
+         [("quit")      (command 'quit '())]
          [else unknown-sentence]))]
 
     [(= sentence-length 0)
