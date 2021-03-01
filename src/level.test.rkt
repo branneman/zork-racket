@@ -1,15 +1,9 @@
-#lang racket
+(module level racket
+  (require rackunit
+           "level.rkt")
 
-(require rackunit
-         "level.rkt")
-(provide level-tests)
-
-(define level-tests
-  (test-suite
-   "level"
-
-   (test-suite
-    "level/get-edges"
+  (module+ test
+    ; level/get-edges
     (test-case "returns edges, not vertexes"
       (graph-part 'a "" "" '((N b)
                              (S c)))
@@ -19,4 +13,4 @@
                              (S b)))
       (check-equal?
        (level/get-edges 'b)
-       '((N c) (S a)))))))
+       '((N c) (S a))))))

@@ -1,15 +1,9 @@
-#lang racket
+(module state racket
+  (require rackunit
+           "state.rkt")
 
-(require rackunit
-         "state.rkt")
-(provide state-tests)
-
-(define state-tests
-  (test-suite
-   "state"
-
-   (test-suite
-    "state/get-rank"
+  (module+ test
+    ; state/get-rank
     (test-case "0-24: Beginner"
       (check-equal? (state/get-rank 0) "Beginner")
       (check-equal? (state/get-rank 24) "Beginner"))
@@ -37,11 +31,7 @@
       (check-equal? (state/get-rank 351) "Cheater")
       (check-equal? (state/get-rank 1000) "Cheater"))
 
-    (test-case "only accepts natural numbers"
-      (void)))
-
-   (test-suite
-    "state/update"
+    ; state/update
     (test-case "throws error when given unknown command"
       (check-exn exn:fail?
-                 (λ () (state/update (command 'foobar '()))))))))
+                 (λ () (state/update (command 'foobar '())))))))

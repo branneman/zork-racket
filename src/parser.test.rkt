@@ -1,35 +1,10 @@
-#lang racket
+(module parser racket
+  (require rackunit
+           "parser.rkt"
+           "state.rkt")
 
-; score
-; restart
-; quit/exit
-
-; look
-; look around
-; inventory
-; shout/scream -> Aaaarrrrgggghhhh!
-
-; (direction)
-; go (direction)
-
-; examine (item)
-; get/take/pick (item)
-; get/take/pick all
-; drop (item)
-
-; attack/kill (creature) with (item)
-
-(require rackunit
-         "parser.rkt"
-         "state.rkt")
-(provide parser-tests)
-
-(define parser-tests
-  (test-suite
-   "parser"
-
-   (test-suite
-    "parser/clean-input"
+  (module+ test
+    ; parser/clean-input
     (test-case "accepts empty input"
       (check-equal?
        (parser/clean-input "")
@@ -60,14 +35,12 @@
     (test-case "replaces non-A-Z characters"
       (check-equal?
        (parser/clean-input "abc 123 ghi !@# mno")
-       "abc ghi mno")))
+       "abc ghi mno"))
 
-   (test-suite
-    "parser/replace-aliases"
+    ; parser/replace-aliases
     (test-case "replaces go/walk with move"
       (check-equal? (parser/replace-aliases '("go"))   '("move"))
       (check-equal? (parser/replace-aliases '("walk")) '("move")))
-
     (test-case "replaces directions"
       (check-equal? (parser/replace-aliases '("u"))       '("up"))
       (check-equal? (parser/replace-aliases '("d"))       '("down"))
@@ -89,20 +62,16 @@
       (check-equal? (parser/replace-aliases '("go" "sw")) '("move" "southwest"))
       (check-equal? (parser/replace-aliases '("go" "w"))  '("move" "west"))
       (check-equal? (parser/replace-aliases '("go" "nw")) '("move" "northwest")))
-
     (test-case "replaces l with look"
       (check-equal? (parser/replace-aliases '("l")) '("look")))
-
     (test-case "replaces diagnostic with diagnose"
-      (check-equal? (parser/replace-aliases '("diagnostic")) '("diagnose"))))
+      (check-equal? (parser/replace-aliases '("diagnostic")) '("diagnose")))
 
-   (test-suite
-    "parser/words->command"
+    ; parser/words->command
     (test-case "accepts empty input"
       (check-equal?
        (parser/words->command '())
        (command 'error '(input-empty))))
-
     (test-case "recognises 'move x' (direction) command"
       (check-equal?
        (parser/words->command '("move" "up"))
@@ -133,8 +102,7 @@
        (command 'move '(W)))
       (check-equal?
        (parser/words->command '("move" "northwest"))
-       (command 'move '(NW)))
-      )
+       (command 'move '(NW))))
     (test-case "recognises 'go x' (direction) command"
       (check-equal?
        (parser/words->command '("go" "north"))
@@ -142,7 +110,6 @@
       (check-equal?
        (parser/words->command '("go" "northeast"))
        (command 'move '(NE))))
-    
     (test-case "recognises `quit` command when given 'quit'"
       (check-equal?
        (parser/words->command '("quit"))
@@ -150,4 +117,4 @@
     (test-case "recognises `quit` command when given 'exit'"
       (check-equal?
        (parser/words->command '("exit"))
-       (command 'quit '()))))))
+       (command 'quit '())))))

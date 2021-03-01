@@ -1,13 +1,7 @@
-#!/usr/bin/env racket
-#lang racket
+#!/usr/bin/env bash
 
-(require rackunit/text-ui)
-
-(require "src/parser.test.rkt")
-(void (run-tests parser-tests))
-
-(require "src/state.test.rkt")
-(void (run-tests state-tests))
-
-(require "src/level.test.rkt")
-(void (run-tests level-tests))
+if [ -n "$1" ]; then
+    raco test -qx $1
+else
+    raco test -qxt .
+fi

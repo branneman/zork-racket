@@ -19,15 +19,18 @@
 
 (struct command (id variables) #:transparent)
 
+; commands
 (define state/commands '())
 (define (state/add-command cmd)
   (set! state/commands (cons cmd state/commands)))
 
+; location
 (define state/location null)
 (define (state/get-location) state/location)
 (define (state/set-location loc)
   (set! state/location loc))
 
+; health
 (define state/health-max 5)
 (define state/health state/health-max)
 (define (state/is-dead) (<= state/health 0))
@@ -40,6 +43,7 @@
       (void)
       (set! state/health (+ state/health 1))))
 
+; visited
 (define-vertex-property leveldata leveldata-visited #:init #f)
 (define (state/has-visited location) (leveldata-visited location #:default #f))
 (define (state/set-visited location) (leveldata-visited-set! location #t))
@@ -48,6 +52,7 @@
 (define (state/get-score)
   0)
 
+; state/get-rank :: number -> string
 (define (state/get-rank score)
   (cond
     [(< score 25) "Beginner"]
