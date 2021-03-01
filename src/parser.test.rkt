@@ -64,6 +64,8 @@
       (check-equal? (parser/replace-aliases '("go" "nw")) '("move" "northwest")))
     (test-case "replaces l with look"
       (check-equal? (parser/replace-aliases '("l")) '("look")))
+    (test-case "replaces scream with shout"
+      (check-equal? (parser/replace-aliases '("scream")) '("shout")))
     (test-case "replaces diagnostic with diagnose"
       (check-equal? (parser/replace-aliases '("diagnostic")) '("diagnose")))
 
@@ -105,16 +107,12 @@
        (command 'move '(NW))))
     (test-case "recognises 'go x' (direction) command"
       (check-equal?
-       (parser/words->command '("go" "north"))
+       (parser/words->command '("move" "north"))
        (command 'move '(N)))
       (check-equal?
-       (parser/words->command '("go" "northeast"))
+       (parser/words->command '("move" "northeast"))
        (command 'move '(NE))))
     (test-case "recognises `quit` command when given 'quit'"
       (check-equal?
        (parser/words->command '("quit"))
-       (command 'quit '())))
-    (test-case "recognises `quit` command when given 'exit'"
-      (check-equal?
-       (parser/words->command '("exit"))
        (command 'quit '())))))

@@ -21,6 +21,9 @@
 (hash-set! strings 'health-0
            "You are dead as a doornail.")
 
+(hash-set! strings 'shout
+           "Aaaarrrrgggghhhh!")
+
 (hash-set! strings 'score
            "Your score is $1 (total of $2 points), in $3 moves.")
 (hash-set! strings 'rank

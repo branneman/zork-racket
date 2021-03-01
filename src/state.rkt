@@ -95,6 +95,9 @@
     ['diagnose
      (list (get-string (string->symbol (string-append "health-" (~s state/health)))))]
 
+    ['shout
+     (list (get-string 'shout))]
+
     ['score
      (list
       ((compose1 (λ (s) (string-replace s "$1" (~s (state/get-score))))
@@ -106,7 +109,7 @@
      (list (string-replace
             (get-string 'rank)
             "$1"
-            (format "~s" (state/get-rank (state/get-score)))))]
+            (~s (state/get-rank (state/get-score)))))]
 
     ['quit
      (begin

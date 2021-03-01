@@ -10,7 +10,8 @@
 ; parser/parse :: string -> command<id,variables>
 (define (parser/parse input)
   (let* ([cleaned (parser/clean-input input)]
-         [words (string-split cleaned " ")])
+         [split (string-split cleaned " ")]
+         [words (parser/replace-aliases split)])
     (parser/words->command words)))
 
 ; parser/clean-input :: string -> string
@@ -41,6 +42,8 @@
 
            [("diagnostic") "diagnose"]
 
+           [("scream") "shout"]
+
            [("exit" "q") "quit"]
            [else x]))
        words))
@@ -48,8 +51,7 @@
 ; parser/words->command :: (string ...) -> command<id,variables>
 (define (parser/words->command words)
   (let* ([sentence-length (length words)]
-         [unknown-sentence (command 'error '(input-unknown-sentence))]
-         [words (parser/replace-aliases words)])
+         [unknown-sentence (command 'error '(input-unknown-sentence))])
   (cond
 
     [(> sentence-length 2)
@@ -91,6 +93,7 @@
          [("northwest") (command 'move '(NW))]
 
          [("diagnose")  (command 'diagnose '())]
+         [("shout")     (command 'shout '())]
          [("look")      (command 'look '())]
          [("score")     (command 'score '())]
          [("rank")      (command 'rank '())]
