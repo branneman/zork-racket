@@ -52,56 +52,56 @@
 (define (parser/words->command words)
   (let* ([sentence-length (length words)]
          [unknown-sentence (command 'error '(input-unknown-sentence))])
-  (cond
+    (cond
 
-    [(> sentence-length 2)
-     unknown-sentence]
+      [(> sentence-length 2)
+       unknown-sentence]
 
-    [(= sentence-length 2)
-     (cond
-       [(equal? words '("look" "around"))
-        (command 'look '())]
-       [(equal? (first words) "move")
-        (let ([dir (case (second words)
-                     [("up")        'up]
-                     [("down")      'down]
-                     [("north")     'N]
-                     [("northeast") 'NE]
-                     [("east")      'E]
-                     [("southeast") 'SE]
-                     [("south")     'S]
-                     [("southwest") 'SW]
-                     [("west")      'W]
-                     [("northwest") 'NW])])
-          (if (not (void? dir))
-              (command 'move (list dir))
-              unknown-sentence))]
-       [else unknown-sentence])]
+      [(= sentence-length 2)
+       (cond
+         [(equal? words '("look" "around"))
+          (command 'look '())]
+         [(equal? (first words) "move")
+          (let ([dir (case (second words)
+                       [("up")        'up]
+                       [("down")      'down]
+                       [("north")     'N]
+                       [("northeast") 'NE]
+                       [("east")      'E]
+                       [("southeast") 'SE]
+                       [("south")     'S]
+                       [("southwest") 'SW]
+                       [("west")      'W]
+                       [("northwest") 'NW])])
+            (if (not (void? dir))
+                (command 'move (list dir))
+                unknown-sentence))]
+         [else unknown-sentence])]
 
-    [(= sentence-length 1)
-     (let ([word (first words)])
-       (case word
-         [("up")        (command 'move '(up))]
-         [("down")      (command 'move '(down))]
-         [("north")     (command 'move '(N))]
-         [("northeast") (command 'move '(NE))]
-         [("east")      (command 'move '(E))]
-         [("southeast") (command 'move '(SE))]
-         [("south")     (command 'move '(S))]
-         [("southwest") (command 'move '(SW))]
-         [("west")      (command 'move '(W))]
-         [("northwest") (command 'move '(NW))]
+      [(= sentence-length 1)
+       (let ([word (first words)])
+         (case word
+           [("up")        (command 'move '(up))]
+           [("down")      (command 'move '(down))]
+           [("north")     (command 'move '(N))]
+           [("northeast") (command 'move '(NE))]
+           [("east")      (command 'move '(E))]
+           [("southeast") (command 'move '(SE))]
+           [("south")     (command 'move '(S))]
+           [("southwest") (command 'move '(SW))]
+           [("west")      (command 'move '(W))]
+           [("northwest") (command 'move '(NW))]
 
-         [("diagnose")  (command 'diagnose '())]
-         [("shout")     (command 'shout '())]
-         [("look")      (command 'look '())]
-         [("score")     (command 'score '())]
-         [("rank")      (command 'rank '())]
-         [("quit")      (command 'quit '())]
-         [else unknown-sentence]))]
+           [("diagnose")  (command 'diagnose '())]
+           [("shout")     (command 'shout '())]
+           [("look")      (command 'look '())]
+           [("score")     (command 'score '())]
+           [("rank")      (command 'rank '())]
+           [("quit")      (command 'quit '())]
+           [else unknown-sentence]))]
 
-    [(= sentence-length 0)
-     (command 'error '(input-empty))]
+      [(= sentence-length 0)
+       (command 'error '(input-empty))]
 
-    [else
-     unknown-sentence])))
+      [else
+       unknown-sentence])))
