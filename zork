@@ -9,8 +9,7 @@
 (display (get-string 'intro))
 
 ; initial state
-(state/set-location 'west-of-house)
-(repl/handler "look")
+(repl/handler "restart")
 
 ; start repl
 (repl/loop)

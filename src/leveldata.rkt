@@ -8,6 +8,7 @@
          leveldata-description
          leveldata-edge-direction
          leveldata-edge-direction-set!
+         level/get-locations
          level/get-edges)
 
 (graph-part 'west-of-house "West of House"

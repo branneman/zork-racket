@@ -8,6 +8,7 @@
          leveldata-description
          leveldata-edge-direction
          leveldata-edge-direction-set!
+         level/get-locations
          level/get-edges
          graph-part)
 
@@ -16,6 +17,9 @@
 (define-vertex-property leveldata leveldata-label)
 (define-vertex-property leveldata leveldata-description)
 (define-edge-property leveldata leveldata-edge-direction)
+
+(define (level/get-locations)
+  (get-vertices leveldata))
 
 (define (level/get-edges vertex)
   (map (λ (v) (list (leveldata-edge-direction vertex v) v))

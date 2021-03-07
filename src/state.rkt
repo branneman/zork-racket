@@ -23,12 +23,16 @@
 (define state/commands '())
 (define (state/add-command cmd)
   (set! state/commands (cons cmd state/commands)))
+(define (state/reset-commands)
+  (set! state/commands '()))
 
 ; location
-(define state/location null)
+(define state/location 'west-of-house)
 (define (state/get-location) state/location)
 (define (state/set-location loc)
   (set! state/location loc))
+(define (state/reset-location)
+  (set! state/location 'west-of-house))
 
 ; health
 (define state/health-max 5)
@@ -42,15 +46,19 @@
   (if (= state/health state/health-max)
       (void)
       (set! state/health (+ state/health 1))))
+(define (state/reset-health)
+  (set! state/health state/health-max))
 
 ; visited
 (define-vertex-property leveldata leveldata-visited #:init #f)
-(define (state/has-visited location) (leveldata-visited location #:default #f))
-(define (state/set-visited location) (leveldata-visited-set! location #t))
+(define (state/has-visited loc) (leveldata-visited loc #:default #f))
+(define (state/set-visited loc) (leveldata-visited-set! loc #t))
+(define (state/reset-visited)
+  (for ([loc (level/get-locations)])
+    (leveldata-visited-set! loc #f)))
 
 (define state/max-score 350)
-(define (state/get-score)
-  0)
+(define (state/get-score) 0)
 
 ; state/get-rank :: number -> string
 (define (state/get-rank score)
@@ -110,6 +118,17 @@
             (get-string 'rank)
             "$1"
             (~s (state/get-rank (state/get-score)))))]
+
+    ['restart
+     (begin
+       (state/reset-commands)
+       (state/reset-location)
+       (state/reset-visited)
+       (state/reset-health)
+       (let ([loc (state/get-location)])
+         (state/set-visited loc)
+         (list (leveldata-label loc)
+               (leveldata-description loc))))]
 
     ['quit
      (begin

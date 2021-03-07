@@ -97,6 +97,7 @@
            [("look")      (command 'look '())]
            [("score")     (command 'score '())]
            [("rank")      (command 'rank '())]
+           [("restart")   (command 'restart '())]
            [("quit")      (command 'quit '())]
            [else unknown-sentence]))]
 
