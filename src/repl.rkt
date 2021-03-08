@@ -6,7 +6,6 @@
 (provide repl/loop
          repl/handler)
 
-; read, eval, print, loop
 (define (repl/loop)
   (display "\n>")
   (repl/handler (read-line))

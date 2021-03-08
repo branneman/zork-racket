@@ -74,8 +74,16 @@
     [else "Cheater"]))
 
 ; state/update :: command<id,variables> -> (string ...)
-(define (state/update cmd)
-  (state/add-command cmd)
+(define (state/update cmd [add-command #t])
+
+  ; dont count certain state updates as moves
+  (define not-moves (list 'restart 'quit))
+  (when (and (not (findf
+                   (λ (x) (equal? x (command-id cmd)))
+                   not-moves))
+             (equal? #t add-command))
+    (state/add-command cmd))
+
   (case (command-id cmd)
     ['look
      (let ([loc (state/get-location)])
@@ -132,8 +140,8 @@
 
     ['quit
      (begin
-       (display (string-append (first (state/update (command 'score '()))) "\n"))
-       (display (string-append (first (state/update (command 'rank '()))) "\n"))
+       (display (string-append (first (state/update (command 'score '()) #f)) "\n"))
+       (display (string-append (first (state/update (command 'rank '()) #f)) "\n"))
        (exit))]
 
     ['error

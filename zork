@@ -1,15 +1,15 @@
 #!/usr/bin/env racket
 #lang racket
 
-(require "src/state.rkt"
-         "src/repl.rkt"
+(require "src/repl.rkt"
          "src/strings.rkt")
 
-; welcome message
 (display (get-string 'intro))
 
-; initial state
-(repl/handler "restart")
+(with-handlers
+  ; quit gracefully when Ctrl-C or SIGINT is received
+  ([exn:break? (λ (_) (begin (newline) (repl/handler "quit")))])
 
-; start repl
-(repl/loop)
+  (repl/handler "restart")
+
+  (repl/loop))
